@@ -37,4 +37,4 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: build/android/${{ matrix.arch }}/release/fripack/inject.so
-        asset_name: fripack-inject-zygisk-loader-${{ matrix.arch }}.so
+        name: fripack-inject-zygisk-loader-${{ matrix.arch }}.so
