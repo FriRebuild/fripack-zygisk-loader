@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [armeabi-v7a, arm64-v8a, x86, x86_64]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup xmake
+      uses: xmake-io/github-action-setup-xmake@v1
+      with:
+        xmake-version: latest
+    - name: Setup Android NDK
+      uses: android-actions/setup-android@v3
+      with:
+        packages: 'ndk;26.1.10909125'
+    - name: Build
+      run: |
+        export ANDROID_NDK_HOME=$ANDROID_HOME/ndk/26.1.10909125
+        xmake f -p android --arch=${{ matrix.arch }} -m release
+        xmake
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: fripack-inject-zygisk-loader-${{ matrix.arch }}
+        path: build/android/${{ matrix.arch }}/release/fripack/inject.so
+    - name: Upload to release
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: build/android/${{ matrix.arch }}/release/fripack/inject.so
+        asset_name: fripack-inject-zygisk-loader-${{ matrix.arch }}.so
