@@ -25,7 +25,7 @@ jobs:
     - name: Build
       run: |
         export ANDROID_NDK_HOME=$ANDROID_HOME/ndk/26.1.10909125
-        xmake f -p android --arch=${{ matrix.arch }} -m release -y
+        xmake f -p android --arch=${{ matrix.arch }} -m release -y --ndk_sdkver=30
         xmake build -vy
     - name: Upload artifact
       uses: actions/upload-artifact@v4
